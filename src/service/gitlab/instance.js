@@ -8,7 +8,7 @@ const gitlabInstance = axios.create({
     headers: {
         "Content-Type": "application/json",
     },
-    timeout: 20000,
+    timeout: process.env.GITLAB_REQUEST_TIMEOUT,
     paramsSerializer: (params) => queryString.stringify(params),
 });
 

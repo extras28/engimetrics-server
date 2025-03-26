@@ -14,7 +14,7 @@ export const sequelize = new Sequelize({
         acquire: parseInt(process.env.DB_POOL_ACQUIRE),
         idle: parseInt(process.env.DB_POOL_IDLE),
     },
-    timezone: "+07:00",
+    timezone: process.env.TIMEZONE,
     logging: false,
     ssl: false,
 
