@@ -1,11 +1,11 @@
 import gitlabInstance from "../instance.js";
 
 const commits = {
-    commits: (params) => {
+    list: (params) => {
         const url = `/projects/${params.projectId}/repository/commits`;
         return gitlabInstance.get(url);
     },
-    commit: (params) => {
+    detail: (params) => {
         const url = `/projects/${params.projectId}/repository/commits/${params.branchName ?? params.sha}`;
         return gitlabInstance.get(url);
     },
