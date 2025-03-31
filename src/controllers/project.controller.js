@@ -1,20 +1,39 @@
+import { Op } from 'sequelize';
 import gitlabService from '../service/gitlab';
-import gitlabInstance from '../service/gitlab/instance';
 import { responseResult } from '../shared/constant/constant';
+import { isValidNumber } from '../shared/utils/utils';
+import Project from '../models/project.model';
 
 export async function getListProject(req, res, next) {
     try {
-        const { limit, page, user } = req.query;
-        const response = await gitlabService.projects.list({
-            per_page: limit,
-            page,
-        });
+        let { limit, page, user, q } = req.query;
 
-        res.rend({
-            result: responseResult.SUCCESS,
-            total: Number(response.headers['x-total']),
-            projects: response.data,
-        });
+        q = q ?? '';
+
+        const conditions = {
+            [Op.or]: [{ name: { [Op.like]: `%${q}%` } }],
+        };
+
+        let projects = [];
+
+        if (!isValidNumber(limit) || !isValidNumber(page)) {
+            projects = await Project.findAndCountAll({
+                where: conditions,
+                order: [['id', 'DESC']],
+            });
+        } else {
+            limit = Number(limit);
+            page = Number(page);
+
+            projects = await Project.findAndCountAll({
+                where: conditions,
+                order: [['id', 'DESC']],
+                limit,
+                offset: limit * page,
+            });
+        }
+
+        res.send({ result: responseResult.SUCCESS, projects });
     } catch (error) {
         next(error);
     }
@@ -22,10 +41,10 @@ export async function getListProject(req, res, next) {
 
 export async function codeReviewController(req, res, next) {
     try {
-        const { projectId } = req.query;
-        const response = await gitlabService.projects.projectById({ projectId });
+        const { id } = req.query;
+        const project = await Project.findByPk(id);
 
-        const project = response.data;
+        const gitUrl = project.http_url_to_repo;
 
         res.send({ result: responseResult.SUCCESS, project });
     } catch (error) {
