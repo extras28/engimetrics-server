@@ -1,9 +1,9 @@
-import gitlabInstance from "../instance.js";
+import gitlabInstance from '../instance.js';
 
 const projects = {
     list: (params) => {
-        const url = "/projects";
-        return gitlabInstance.get(url);
+        const url = '/projects';
+        return gitlabInstance.get(url, { params });
     },
     projectById: (params) => {
         const url = `/projects/${params.projectId}`;

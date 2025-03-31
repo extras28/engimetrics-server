@@ -44,7 +44,23 @@ export async function codeReviewController(req, res, next) {
         const { id } = req.query;
         const project = await Project.findByPk(id);
 
-        const gitUrl = project.http_url_to_repo;
+        const repoUrl = project.http_url_to_repo;
+
+        const tempDir = path.join(__dirname, 'temp_repo');
+        const repoName = path.basename(repoUrl, '.git');
+        const repoPath = path.join(tempDir, repoName);
+
+        // Clone repo
+        await simpleGit().clone(repoUrl, repoPath);
+        console.log(`Cloned repository: ${repoUrl}`);
+
+        // // Log repo files
+        // const files = await fs.readdir(repoPath);
+        // console.log('Repository files:', files);
+
+        // Remove only the cloned repo
+        await fs.remove(repoPath);
+        console.log('Repository removed successfully');
 
         res.send({ result: responseResult.SUCCESS, project });
     } catch (error) {
