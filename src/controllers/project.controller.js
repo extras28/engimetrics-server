@@ -3,6 +3,7 @@ import gitlabService from '../service/gitlab';
 import { responseResult } from '../shared/constant/constant';
 import { isValidNumber } from '../shared/utils/utils';
 import Project from '../models/project.model';
+import simpleGit from 'simple-git';
 
 export async function getListProject(req, res, next) {
     try {
@@ -34,6 +35,20 @@ export async function getListProject(req, res, next) {
         }
 
         res.send({ result: responseResult.SUCCESS, projects });
+    } catch (error) {
+        next(error);
+    }
+}
+
+export async function getProjectDetail(req, res, next) {
+    try {
+        const { id } = req.params;
+
+        const project = await Project.findByPk(id);
+
+        if (!project) throw new Error(ERROR_PROJECT_NOT_EXISTED);
+
+        res.send({ result: responseResult.SUCCESS, project });
     } catch (error) {
         next(error);
     }
