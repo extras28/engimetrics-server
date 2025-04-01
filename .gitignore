@@ -9,7 +9,6 @@ logs/
 */logs/
 package-lock.json
 ./public
-docker-compose.yml
 .vscode
 buildscript.sh
 Dockerfile

@@ -1,0 +1,90 @@
+version: '2.2'
+
+services:
+    engimetrics:
+        image: engimetrics:latest
+        environment:
+            - HOSTNAME=
+            - PORT=${PORT}
+
+            - JWT_SECRET=${JWT_SECRET}
+            - PEPPER=${PEPPER}
+            - JWT_ACCESS_EXPIRATION=${JWT_ACCESS_EXPIRATION}
+            - STORAGE_DIR=${STORAGE_DIR}
+            - PUBLIC_DIR=${PUBLIC_DIR}
+            - PATH_PUBLIC_DIR=${PATH_PUBLIC_DIR}
+            - PUBLIC_UPLOAD_DIR=${PUBLIC_UPLOAD_DIR}
+
+            - GITLAB_BASE_URL=${GITLAB_BASE_URL}
+            - GITLAB_TOKEN=${GITLAB_TOKEN}
+            - GITLAB_REQUEST_TIMEOUT=${GITLAB_REQUEST_TIMEOUT}
+            - GITLAB_PROJECTS_LIMIT=${GITLAB_PROJECTS_LIMIT}
+            - CLONE_DIR=${CLONE_DIR}
+
+            - TIMEZONE=${TIMEZONE}
+            - DB_HOST=${DB_HOST}
+            - DB_USERNAME=${DB_USERNAME}
+            - DB_PASSWORD=${DB_PASSWORD}
+            - DB_PORT=${DB_PORT}
+            - DB_NAME=${DB_NAME}
+            - DB_DIALECT=${DB_DIALECT}
+            - DB_POOL_MIN=${DB_POOL_MIN}
+            - DB_POOL_MAX=${DB_POOL_MAX}
+            - DB_POOL_ACQUIRE=${DB_POOL_ACQUIRE}
+            - DB_POOL_IDLE=${DB_POOL_IDLE}
+
+        ports:
+            - '3001:3030'
+        networks:
+            - engimetrics_network
+        depends_on:
+            - mariadb
+
+    mariadb:
+        image: mariadb:latest
+        environment:
+            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+            MYSQL_DATABASE: ${DB_NAME}
+            MYSQL_USER: ${DB_USERNAME}
+            MYSQL_PASSWORD: ${DB_PASSWORD}
+        ports:
+            - '3306:3306'
+        networks:
+            - engimetrics_network
+        volumes:
+            - mariadb_data:/var/lib/mysql
+            - ./my.cnf:/etc/mysql/my.cnf
+
+    phpmyadmin:
+        image: phpmyadmin:latest
+        environment:
+            PMA_HOST: ${DB_DIALECT}
+            PMA_PORT: ${DB_PORT}
+            PMA_USER: ${DB_USERNAME}
+            PMA_PASSWORD: ${DB_PASSWORD}
+        ports:
+            - '5050:80'
+        depends_on:
+            - mariadb
+        networks:
+            - engimetrics_network
+
+    sonar:
+        image: sonarqube:latest
+        environment:
+            - SONARQUBE_JDBC_URL=jdbc:mysql://mariadb:3306/sonar
+            - SONARQUBE_JDBC_USERNAME=${DB_USERNAME}
+            - SONARQUBE_JDBC_PASSWORD=${DB_PASSWORD}
+        ports:
+            - '9000:9000'
+        networks:
+            - engimetrics_network
+        depends_on:
+            - mariadb
+
+networks:
+    engimetrics_network:
+        driver: bridge
+
+volumes:
+    mariadb_data:
