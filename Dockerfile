@@ -1,4 +1,4 @@
-FROM node:16-alpine
+FROM node:18-alpine
 
 # Tạo thư mục ứng dụng và thiết lập quyền
 RUN mkdir -p /home/node/app && chown -R node:node /home/node/app
