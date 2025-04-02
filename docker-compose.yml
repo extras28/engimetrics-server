@@ -6,7 +6,6 @@ services:
         environment:
             - HOSTNAME=
             - PORT=${PORT}
-
             - JWT_SECRET=${JWT_SECRET}
             - PEPPER=${PEPPER}
             - JWT_ACCESS_EXPIRATION=${JWT_ACCESS_EXPIRATION}
@@ -14,13 +13,11 @@ services:
             - PUBLIC_DIR=${PUBLIC_DIR}
             - PATH_PUBLIC_DIR=${PATH_PUBLIC_DIR}
             - PUBLIC_UPLOAD_DIR=${PUBLIC_UPLOAD_DIR}
-
             - GITLAB_BASE_URL=${GITLAB_BASE_URL}
             - GITLAB_TOKEN=${GITLAB_TOKEN}
             - GITLAB_REQUEST_TIMEOUT=${GITLAB_REQUEST_TIMEOUT}
             - GITLAB_PROJECTS_LIMIT=${GITLAB_PROJECTS_LIMIT}
             - CLONE_DIR=${CLONE_DIR}
-
             - TIMEZONE=${TIMEZONE}
             - DB_HOST=${DB_HOST}
             - DB_USERNAME=${DB_USERNAME}
@@ -32,7 +29,6 @@ services:
             - DB_POOL_MAX=${DB_POOL_MAX}
             - DB_POOL_ACQUIRE=${DB_POOL_ACQUIRE}
             - DB_POOL_IDLE=${DB_POOL_IDLE}
-
         ports:
             - '3001:3030'
         networks:
@@ -47,8 +43,6 @@ services:
             MYSQL_DATABASE: ${DB_NAME}
             MYSQL_USER: ${DB_USERNAME}
             MYSQL_PASSWORD: ${DB_PASSWORD}
-        ports:
-            - '3306:3306'
         networks:
             - engimetrics_network
         volumes:
