@@ -1,8 +1,8 @@
 import { DataTypes } from 'sequelize';
-import { sequelize } from '../config/sequelize.config';
+import { sequelize } from '../config/sequelize.config.js';
 
 const Tool = sequelize.define('tool', {
-    toolId: {
+    id: {
         type: DataTypes.BIGINT.UNSIGNED,
         primaryKey: true,
         autoIncrement: true,

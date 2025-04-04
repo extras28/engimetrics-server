@@ -1,7 +1,7 @@
 FROM node:18-alpine
 
-# Cài đặt Java (OpenJDK) và các công cụ cần thiết
-RUN apk add --no-cache openjdk17-jdk curl unzip bash
+# Cài đặt Java (OpenJDK), Git và các công cụ cần thiết
+RUN apk add --no-cache openjdk17-jdk curl unzip bash git
 
 # Xác định chính xác đường dẫn JAVA_HOME trên Alpine
 ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk
@@ -9,6 +9,9 @@ ENV PATH="${JAVA_HOME}/bin:${PATH}"
 
 # Kiểm tra Java
 RUN java -version
+
+# Kiểm tra Git
+RUN git --version
 
 # Tạo thư mục ứng dụng và thiết lập quyền
 RUN mkdir -p /home/node/app && chown -R node:node /home/node/app

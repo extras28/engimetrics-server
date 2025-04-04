@@ -10,6 +10,7 @@ import { isValidNumber } from '../shared/utils/utils.js';
 import { exec } from 'child_process';
 import axios from 'axios';
 import { sonarScanner } from '../code-quality-tools/sonar/sonarScanner.js';
+import gitlabService from '../services/gitlab/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -43,7 +44,20 @@ export async function getListProject(req, res, next) {
             });
         }
 
-        res.send({ result: responseResult.SUCCESS, projects });
+        await Promise.all(
+            projects.rows.map(async (project) => {
+                const res = await gitlabService.projects.languages({ projectId: project.id });
+                project.dataValues.languages = res.data;
+            })
+        );
+
+        res.send({
+            result: responseResult.SUCCESS,
+            page,
+            total: projects.count,
+            count: projects.rows.length,
+            projects: projects.rows,
+        });
     } catch (error) {
         next(error);
     }
@@ -77,6 +91,7 @@ export async function codeReviewController(req, res, next) {
         }
 
         const repoUrl = project.http_url_to_repo;
+        // const repoUrl = 'https://github.com/extras28/prodcare-server.git';
         const tempDir = path.join(__dirname, '../../temp_repos');
         const repoName = path.basename(repoUrl, '.git');
         const repoPath = path.join(tempDir, repoName);
@@ -86,19 +101,37 @@ export async function codeReviewController(req, res, next) {
             `http://oauth2:${process.env.GITLAB_TOKEN}@`
         );
 
+        // const authRepoUrl = 'https://github.com/extras28/prodcare-server.git';
+        // const project = { id: 1, name: 'prodcare-server' };
+
         // Xóa repo cũ nếu tồn tại trước khi clone
-        await fs.rm(repoPath, { recursive: true, force: true });
+        await fs.rm(repoPath, { recursive: true, force: true }, (err) => {
+            if (err) console.error(err.message);
+        });
 
         await simpleGit().clone(authRepoUrl, repoPath);
 
         const analytics = await sonarScanner(project, repoPath);
         // Xóa repo sau khi hoàn tất
-        await fs.rm(repoPath, { recursive: true, force: true });
-
+        await fs.rm(repoPath, { recursive: true, force: true }, (err) => {
+            if (err) console.error(err.message);
+        });
         res.send({
             result: responseResult.SUCCESS,
-            issues: analytics,
+            analytics: analytics,
         });
+    } catch (error) {
+        next(error);
+    }
+}
+
+export async function getProjectLanguage(req, res, next) {
+    try {
+        const { id } = req.params;
+
+        const response = await gitlabService.projects.languages({ projectId: id });
+
+        res.send({ result: responseResult.SUCCESS, languages: response.data });
     } catch (error) {
         next(error);
     }

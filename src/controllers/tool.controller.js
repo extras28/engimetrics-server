@@ -1,14 +1,16 @@
 import { Op } from 'sequelize';
-import Tool from '../models/tool.model';
-import { responseResult } from '../shared/constant/constant';
-import { ERROR_TOOL_NOT_EXITED } from '../shared/errors/error';
+import Tool from '../models/tool.model.js';
+import { responseResult } from '../shared/constant/constant.js';
+import { ERROR_TOOL_NOT_EXITED } from '../shared/errors/error.js';
 
 export async function getListTool(req, res, next) {
     try {
-        const { q } = req.query;
+        let { q } = req.query;
+
+        q = q ?? '';
 
         const tools = await Tool.findAll({
-            where: { name: { [Op.like]: `%${q}%` } },
+            where: { [Op.or]: { name: { [Op.like]: `%${q}%` } } },
         });
 
         res.send({ result: responseResult.SUCCESS, tools });

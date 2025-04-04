@@ -21,6 +21,10 @@ const projects = {
         const url = `/projects/${params.projectId}/members/all`;
         return gitlabInstance.get(url);
     },
+    languages: (params) => {
+        const url = `/projects/${params.projectId}/languages`;
+        return gitlabInstance.get(url);
+    },
 };
 
 export default projects;

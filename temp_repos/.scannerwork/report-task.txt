@@ -1,6 +1,0 @@
-projectKey=engimetrics
-serverUrl=http://engimetrics-server-sonar-1:9000
-serverVersion=25.3.0.104237
-dashboardUrl=http://engimetrics-server-sonar-1:9000/dashboard?id=engimetrics
-ceTaskId=e6039a1f-808a-4aa8-b1f5-95dce04d7793
-ceTaskUrl=http://engimetrics-server-sonar-1:9000/api/ce/task?id=e6039a1f-808a-4aa8-b1f5-95dce04d7793

@@ -88,9 +88,16 @@ export async function sonarScanner(project, repoPath) {
         }
 
         // 📊 Lấy kết quả quét
-        const scanResults = await axios.get(`${sonarHost}/api/issues/search`, {
-            params: { componentKeys: sonarProjectKey },
-            auth: { username: sonarUsername, password: sonarPassword },
+        const scanResults = await axios.get(`${sonarHost}/api/measures/component`, {
+            params: {
+                component: sonarProjectKey,
+                metricKeys:
+                    'new_software_quality_security_issues,software_quality_reliability_issues,software_quality_maintainability_issues,coverage,duplicated_lines_density,new_security_hotspots', // Các chỉ số cần lấy
+            },
+            auth: {
+                username: sonarUsername,
+                password: sonarPassword,
+            },
         });
 
         console.log(`✅ SonarQube analysis completed for ${project.name}.`);
